@@ -2,6 +2,7 @@ package com.example.moviedb.service.model.popular
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
@@ -12,14 +13,15 @@ data class ResponseMovies(
 
 	@PrimaryKey
 	@field:SerializedName("page")
-	val page: Long? = 0,
+	var page: Long? = 0,
 
 	@field:SerializedName("total_pages")
-	val totalPages: Int? = null,
+	var totalPages: Int? = null,
 
+	@Ignore
 	@field:SerializedName("results")
-	val results: List<ResultsItem>? = null,
+	var results: List<ResultsItem>? = null,
 
 	@field:SerializedName("total_results")
-	val totalResults: Int? = null
+	var totalResults: Int? = null
 ) : Parcelable

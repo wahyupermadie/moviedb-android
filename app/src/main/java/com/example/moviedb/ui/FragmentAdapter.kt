@@ -2,10 +2,8 @@ package com.example.moviedb.ui
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.FragmentStatePagerAdapter
-import com.example.moviedb.ui.popular.PopularFragment
-import java.util.ArrayList
+import java.util.*
 
 class FragmentAdapter (fm : FragmentManager, fragmentList: ArrayList<Fragment>) : FragmentStatePagerAdapter(fm){
 

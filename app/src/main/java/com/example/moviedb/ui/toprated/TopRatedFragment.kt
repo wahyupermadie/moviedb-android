@@ -2,11 +2,8 @@ package com.example.moviedb.ui.toprated
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +15,8 @@ import com.example.moviedb.R
 import com.example.moviedb.adapter.TopRatedAdapter
 import com.example.moviedb.service.model.popular.ResultsItem
 import com.example.moviedb.ui.detail.DetailActivity
+import com.example.moviedb.utils.Constant
 import kotlinx.android.synthetic.main.toprated_fragment.*
-import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class TopRatedFragment() : Fragment(){
@@ -53,25 +50,19 @@ class TopRatedFragment() : Fragment(){
 
     private fun fetchData(page : Int) {
         isFetchingMovies = true
-        if (isConnected(context)){
+        if (Constant.isConnected(context)){
             topRatedVM.getTopRatedMovie(page)?.observe(this, Observer {
                 topratedList = it?.results
                 dialog.dismiss()
                 setAdapter()
             })
         }else{
-            activity?.toast("No Connection")
+            topRatedVM.getTopRatedLocalData()?.observe(this, Observer {
+                topratedList = it
+                dialog.dismiss()
+                setAdapter()
+            })
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        fetchData(currentPage)
-    }
-
-    private fun isConnected(ctx: Context?) : Boolean {
-        val connectivityManager = ctx?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return connectivityManager.activeNetwork != null
     }
 
     private fun setAdapter() {

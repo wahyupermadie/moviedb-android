@@ -1,5 +1,7 @@
 package com.example.moviedb.utils
 
+import android.content.Context
+import android.net.ConnectivityManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -13,5 +15,10 @@ object Constant{
 
         val newSdf = SimpleDateFormat("dd-MMM-yyyy", Locale.US)
         return newSdf.format(date!!)
+    }
+
+    fun isConnected(ctx: Context?) : Boolean {
+        val connectivityManager = ctx?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return connectivityManager.activeNetwork != null
     }
 }

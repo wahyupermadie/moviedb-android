@@ -2,9 +2,7 @@ package com.example.moviedb.ui.popular
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +15,8 @@ import com.example.moviedb.R
 import com.example.moviedb.adapter.PopularAdapter
 import com.example.moviedb.service.model.popular.ResultsItem
 import com.example.moviedb.ui.detail.DetailActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.moviedb.utils.Constant
 import kotlinx.android.synthetic.main.popular_fragment.*
-import org.jetbrains.anko.indeterminateProgressDialog
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class PopularFragment() : Fragment(){
@@ -55,24 +50,19 @@ class PopularFragment() : Fragment(){
 
     private fun fetchData(page : Int) {
         isFetchingMovies = true
-        if (isConnected(context)){
+        if (Constant.isConnected(context)){
             popularViewModel.getPopularMovies(page)?.observe(this, Observer {
                 popularList = it?.results
                 dialog.dismiss()
                 setAdapter()
             })
         }else{
-            popularViewModel.getLocalMovies(page)?.observe(this, Observer {
-                popularList = it?.results
+            popularViewModel.getLocalMovies()?.observe(this, Observer {
+                popularList = it
                 dialog.dismiss()
                 setAdapter()
             })
         }
-    }
-
-    private fun isConnected(ctx: Context?) : Boolean {
-        val connectivityManager = ctx?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return connectivityManager.activeNetwork != null
     }
 
     private fun setAdapter() {
@@ -114,10 +104,5 @@ class PopularFragment() : Fragment(){
                 }
             }
         })
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        fetchData(currentPage)
     }
 }

@@ -6,18 +6,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.moviedb.BuildConfig
 import com.example.moviedb.service.local.MoviesDao
-import com.example.moviedb.service.local.FavoritDao
 import com.example.moviedb.service.model.popular.ResponseMovies
-import com.example.moviedb.service.model.popular.favorite.FavoriteItem
+import com.example.moviedb.service.model.popular.ResultsItem
 import com.example.moviedb.service.model.popular.video.ResponseVideo
 import com.example.moviedb.service.network.ApiService
+import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class MovieRepository(
     private val apiService: ApiService?,
-    private val moviesDao: MoviesDao,
-    private val favoritDao: FavoritDao
+    private val moviesDao: MoviesDao
 ){
 
     @SuppressLint("CheckResult")
@@ -36,7 +36,7 @@ class MovieRepository(
     }
 
     private fun insertLocal(responseMovies: ResponseMovies?) {
-        responseMovies?.let {
+        responseMovies?.results?.forEach {
             moviesDao.insert(it)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -48,8 +48,20 @@ class MovieRepository(
         }
     }
 
-    fun getLocalData(page : Int) : LiveData<ResponseMovies>{
-        return moviesDao.getAll(page)
+    fun getLocalData() : LiveData<List<ResultsItem>> {
+        return moviesDao.getAll()
+    }
+
+    fun getLocalTopRatedData() : LiveData<List<ResultsItem>> {
+        return moviesDao.getTopRatedLocalData()
+    }
+
+    fun getSingleLocalData(id : Int) : Single<ResultsItem> {
+        return moviesDao.getItem(id)
+    }
+
+    fun updateFavorite(id : Int, value : Boolean): Completable {
+        return moviesDao.setFavorite(value, id)
     }
 
     @SuppressLint("CheckResult")
@@ -74,6 +86,7 @@ class MovieRepository(
             ?.subscribeOn(Schedulers.io())
             ?.subscribe({
                 popularMovies.value = it
+                insertLocal(it)
             },{
                 popularMovies.value = null
             })
