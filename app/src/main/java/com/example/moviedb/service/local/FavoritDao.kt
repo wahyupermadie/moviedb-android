@@ -5,14 +5,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
-import com.example.moviedb.service.model.popular.ResponseMovies
+import com.example.moviedb.service.model.popular.favorite.FavoriteItem
 import io.reactivex.Completable
 
 @Dao
-interface MoviesDao{
-    @Query("SELECT * FROM response_popular WHERE page = :page")
-    fun getAll(page : Int): LiveData<ResponseMovies>
+interface FavoritDao{
+    @Query("SELECT * FROM favoriteItem")
+    fun getAll(): LiveData<FavoriteItem>
 
     @Insert(onConflict = REPLACE)
-    fun insert(responseMovies: ResponseMovies) : Completable
+    fun insert(favoriteItem: FavoriteItem) : Completable
 }

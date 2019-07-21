@@ -6,6 +6,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,89 +14,60 @@ import com.example.moviedb.R
 import com.example.moviedb.adapter.PopularAdapter
 import com.example.moviedb.service.model.popular.ResultsItem
 import com.example.moviedb.ui.detail.DetailActivity
+import com.example.moviedb.ui.favorite.FavoriteFragment
+import com.example.moviedb.ui.popular.PopularFragment
+import com.example.moviedb.ui.popular.PopularViewModel
+import com.example.moviedb.ui.toprated.TopRatedFragment
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.util.ArrayList
 
 
 class MainActivity : AppCompatActivity(){
-    private val mainViewModel : MainViewModel by viewModel()
-    private lateinit var popularAdapter : PopularAdapter
-    private var popularList : List<ResultsItem>? = null
-    private lateinit var dialog : ProgressDialog
-    private var currentPage = 1
-    private var isFetchingMovies: Boolean = true
-    private lateinit var manager : LinearLayoutManager
+    lateinit var mAdapter: FragmentAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        init()
-        fetchData(currentPage)
-        scrollListener()
+        setupFragment()
+        initUi()
     }
 
-    private fun scrollListener() {
-        rv_movies.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val totalItemCount = manager.itemCount
-                val visibleItemCount = manager.childCount
-                val firstVisibleItem = manager.findFirstVisibleItemPosition()
-                if(firstVisibleItem + visibleItemCount >= totalItemCount / 2){
-                    if (!isFetchingMovies){
-                        currentPage += 1
-                        fetchData(currentPage)
-                    }
+    private fun initUi() {
+        setSupportActionBar(toolbar)
+        supportActionBar!!.title = "Popular Movies"
+        view_pager.setCurrentItem(0, true)
+    }
+
+    private fun setupFragment() {
+        val fragmentList: ArrayList<Fragment> = arrayListOf()
+        fragmentList.add(PopularFragment.instance())
+        fragmentList.add(TopRatedFragment.instance())
+        fragmentList.add(FavoriteFragment.instance())
+        mAdapter = FragmentAdapter(supportFragmentManager, fragmentList)
+        view_pager.adapter = mAdapter
+        tab_layout.setupWithViewPager(view_pager)
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab?.position){
+                    0 -> view_pager.setCurrentItem(0, true)
+                    1 -> view_pager.setCurrentItem(1, true)
+                    2 -> view_pager.setCurrentItem(2, true)
                 }
             }
+
         })
-    }
-
-    private fun fetchData(page : Int) {
-        toast(currentPage.toString())
-        isFetchingMovies = true
-        if (isConnected(this)){
-            mainViewModel.getPopularMovies(page)?.observe(this, Observer {
-                popularList = it?.results
-                dialog.dismiss()
-                setAdapter()
-            })
-        }else{
-            mainViewModel.getLocalMovies(page)?.observe(this, Observer {
-                popularList = it?.results
-                dialog.dismiss()
-                setAdapter()
-            })
-        }
-    }
-
-    private fun isConnected(ctx: Context?) : Boolean {
-        val connectivityManager = ctx?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return connectivityManager.activeNetwork != null
-    }
-
-    private fun setAdapter() {
-        popularList?.forEach {
-            popularAdapter.addData(it)
-        }
-        popularAdapter.notifyDataSetChanged()
-        isFetchingMovies = false
-    }
-
-    @SuppressLint("WrongConstant")
-    private fun init() {
-        dialog = indeterminateProgressDialog("Fetching data...","Loading...")
-        dialog.setCancelable(false)
-        dialog.show()
-        manager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
-        popularAdapter = PopularAdapter(mutableListOf()) {
-            startActivity<DetailActivity>("details" to it)
-        }
-        with(rv_movies){
-            this.layoutManager = manager
-            this.adapter = popularAdapter
-        }
     }
 }

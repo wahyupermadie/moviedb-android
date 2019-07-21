@@ -15,6 +15,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class DetailActivity : AppCompatActivity() {
     private var moviesItem : ResultsItem? = null
+    private var moviesItems : com.example.moviedb.service.model.popular.favorite.FavoriteItem? = null
     lateinit var mBinding : ActivityDetailBinding
     private lateinit var trailerAdapter: TrailerAdapter
     private val detailViewModel : DetailActivityViewModel by viewModel()
@@ -30,6 +31,8 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun init() {
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = moviesItem?.title
         mBinding.movies = moviesItem
 

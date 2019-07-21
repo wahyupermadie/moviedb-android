@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Entity(tableName = "response_popular")
 @Parcelize
-data class ResponsePopular(
+data class ResponseMovies(
 
 	@PrimaryKey
 	@field:SerializedName("page")
