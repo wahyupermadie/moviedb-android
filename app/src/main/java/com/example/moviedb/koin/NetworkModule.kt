@@ -8,7 +8,6 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.Dispatcher
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -28,11 +27,9 @@ fun createOkHttpClient() : OkHttpClient {
     val dispatcher = Dispatcher()
     dispatcher.maxRequests = 1
 
-    val interceptor = object : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            SystemClock.sleep(1000)
-            return chain.proceed(chain.request())
-        }
+    val interceptor = Interceptor { chain ->
+        SystemClock.sleep(1000)
+        chain.proceed(chain.request())
     }
 
     httpInterceptor.level = HttpLoggingInterceptor.Level.BASIC

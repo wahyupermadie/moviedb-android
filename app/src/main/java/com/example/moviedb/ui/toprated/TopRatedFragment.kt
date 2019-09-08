@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moviedb.R
 import com.example.moviedb.adapter.TopRatedAdapter
 import com.example.moviedb.service.model.popular.ResultsItem
-import com.example.moviedb.ui.detail.DetailActivity
+import com.example.moviedb.ui.detail.DetailMovieActivity
 import com.example.moviedb.utils.Constant
 import kotlinx.android.synthetic.main.toprated_fragment.*
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TopRatedFragment() : Fragment(){
     private val topRatedVM : TopRatedViewModel by viewModel()
@@ -27,6 +28,8 @@ class TopRatedFragment() : Fragment(){
     private var currentPage = 1
     private var isFetchingMovies: Boolean = true
     private lateinit var manager : LinearLayoutManager
+    private var recyclerViewState : Parcelable? = null
+    val LIST_STATE_KEY = "RECYCLER_VIEW_STATE"
     companion object{
         fun instance() : TopRatedFragment{
             val args = Bundle()
@@ -36,21 +39,40 @@ class TopRatedFragment() : Fragment(){
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (recyclerViewState != null) {
+            manager.onRestoreInstanceState(recyclerViewState)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        recyclerViewState = rv_movies.layoutManager?.onSaveInstanceState()
+        outState.putParcelable(LIST_STATE_KEY, recyclerViewState)
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.toprated_fragment, container, false)
+        val view = inflater.inflate(R.layout.toprated_fragment, container, false)
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         init()
-        fetchData(currentPage)
         scrollListener()
+        if (savedInstanceState!=null){
+            // getting recyclerview position
+            recyclerViewState = savedInstanceState.getParcelable(LIST_STATE_KEY)
+            rv_movies.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        }
+        fetchData(currentPage)
     }
 
     private fun fetchData(page : Int) {
         isFetchingMovies = true
         if (Constant.isConnected(context)){
+            dialog.show()
             topRatedVM.getTopRatedMovie(page)?.observe(this, Observer {
                 topratedList = it?.results
                 dialog.dismiss()
@@ -71,6 +93,13 @@ class TopRatedFragment() : Fragment(){
         }
         topratedAdapter.notifyDataSetChanged()
         isFetchingMovies = false
+
+        if(rv_movies.adapter != topratedAdapter){
+            with(rv_movies){
+                this.layoutManager = manager
+                this.adapter = topratedAdapter
+            }
+        }
     }
 
     @SuppressLint("WrongConstant")
@@ -78,16 +107,11 @@ class TopRatedFragment() : Fragment(){
         dialog = ProgressDialog(context)
         dialog.setMessage("Fetching data...")
         dialog.setCancelable(false)
-        dialog.show()
         manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         topratedAdapter = TopRatedAdapter(mutableListOf()) {
-            val intent = Intent(context, DetailActivity::class.java)
+            val intent = Intent(context, DetailMovieActivity::class.java)
             intent.putExtra("details", it)
             startActivity(intent)
-        }
-        with(rv_movies){
-            this.layoutManager = manager
-            this.adapter = topratedAdapter
         }
     }
     private fun scrollListener() {

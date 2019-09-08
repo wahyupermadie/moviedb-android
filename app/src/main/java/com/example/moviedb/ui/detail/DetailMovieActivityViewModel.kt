@@ -10,7 +10,7 @@ import com.example.moviedb.service.repository.MovieRepository
 import io.reactivex.Completable
 import io.reactivex.Single
 
-class DetailActivityViewModel(apiService: ApiService?, moviesDao: MoviesDao) : ViewModel(){
+class DetailMovieActivityViewModel(apiService: ApiService?, moviesDao: MoviesDao) : ViewModel(){
     private val repository = MovieRepository(apiService, moviesDao)
 
     fun getTrailers(movieId: String) : LiveData<ResponseVideo>{

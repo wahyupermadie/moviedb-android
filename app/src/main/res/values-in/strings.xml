@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DB Film</string>
+    <string name="overview">The story follows Carol Danvers as she becomes one of the universe’s most powerful heroes
+        when Earth is caught in the middle of a galactic war between two alien races. Set in the 1990s, Captain Marvel
+        is an all-new adventure from a previously unseen period in the history of the Marvel Cinematic Universe.
+    </string>
+    <string name="movie_title">Manusia Besi</string>
+    <string name="vote_average">Rata-rata pemilih</string>
+    <string name="release_date">Tanggal Terbit</string>
+    <string name="language">Bahasa</string>
+    <string name="trailers">Trailer</string>
+    <string name="popular">Populer</string>
+    <string name="top_rated">Rating Teratas</string>
+    <string name="tv_show">Acara Tv</string>
+    <string name="favorite">Favorit</string>
+    <string name="change_language">Pilih Bahasa</string>
+    <string name="lbl_trailers">Trailer</string>
+    <string name="lbl_overview">Ringkasan</string>
+    <string name="lbl_title">Judul</string>
+</resources>

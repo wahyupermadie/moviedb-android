@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moviedb.R
 import com.example.moviedb.adapter.PopularAdapter
 import com.example.moviedb.service.model.popular.ResultsItem
-import com.example.moviedb.ui.detail.DetailActivity
+import com.example.moviedb.ui.detail.DetailMovieActivity
 import com.example.moviedb.utils.Constant
-import kotlinx.android.synthetic.main.popular_fragment.*
-import org.koin.android.viewmodel.ext.android.viewModel
+import kotlinx.android.synthetic.main.fragment_popular.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PopularFragment() : Fragment(){
+class PopularFragment : Fragment(){
     private val popularViewModel : PopularViewModel by viewModel()
     private lateinit var popularAdapter : PopularAdapter
     private var popularList : List<ResultsItem>? = null
@@ -27,7 +28,8 @@ class PopularFragment() : Fragment(){
     private var currentPage = 1
     private var isFetchingMovies: Boolean = true
     private lateinit var manager : LinearLayoutManager
-
+    private var recyclerViewState : Parcelable? = null
+    val LIST_STATE_KEY = "RECYCLER_VIEW_STATE"
     companion object{
         fun instance() : PopularFragment{
             val args = Bundle()
@@ -38,29 +40,40 @@ class PopularFragment() : Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.popular_fragment, container, false)
+        val view = inflater.inflate(R.layout.fragment_popular, container, false)
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        super.onActivityCreated (savedInstanceState)
         init()
-        fetchData(currentPage)
         scrollListener()
+        if (savedInstanceState!=null){
+            // getting recyclerview position
+            recyclerViewState = savedInstanceState.getParcelable(LIST_STATE_KEY)
+            rv_movies.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        }
+        fetchData(currentPage)
     }
 
     private fun fetchData(page : Int) {
         isFetchingMovies = true
+        dialog.show()
         if (Constant.isConnected(context)){
-            popularViewModel.getPopularMovies(page)?.observe(this, Observer {
-                popularList = it?.results
-                dialog.dismiss()
-                setAdapter()
+            popularViewModel.getPopularMovies(page)?.observe(viewLifecycleOwner, Observer {
+                it?.results?.let {results ->
+                    popularList = results
+                    dialog.dismiss()
+                    setAdapter()
+                }
             })
         }else{
-            popularViewModel.getLocalMovies()?.observe(this, Observer {
-                popularList = it
-                dialog.dismiss()
-                setAdapter()
+            popularViewModel.getLocalMovies().observe(viewLifecycleOwner, Observer {
+                it?.let {result ->
+                    popularList = result
+                    dialog.dismiss()
+                    setAdapter()
+                }
             })
         }
     }
@@ -71,6 +84,13 @@ class PopularFragment() : Fragment(){
         }
         popularAdapter.notifyDataSetChanged()
         isFetchingMovies = false
+
+        if(rv_movies.adapter != popularAdapter){
+            with(rv_movies){
+                this.layoutManager = manager
+                this.adapter = popularAdapter
+            }
+        }
     }
 
     @SuppressLint("WrongConstant")
@@ -78,18 +98,15 @@ class PopularFragment() : Fragment(){
         dialog = ProgressDialog(context)
         dialog.setMessage("Fetching data...")
         dialog.setCancelable(false)
-        dialog.show()
         manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         popularAdapter = PopularAdapter(mutableListOf()) {
-            val intent = Intent(context, DetailActivity::class.java)
+            val intent = Intent(context, DetailMovieActivity::class.java)
             intent.putExtra("details", it)
             startActivity(intent)
         }
-        with(rv_movies){
-            this.layoutManager = manager
-            this.adapter = popularAdapter
-        }
+
     }
+
     private fun scrollListener() {
         rv_movies.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -104,5 +121,18 @@ class PopularFragment() : Fragment(){
                 }
             }
         })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        recyclerViewState = rv_movies.layoutManager?.onSaveInstanceState()
+        outState.putParcelable(LIST_STATE_KEY, recyclerViewState)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (recyclerViewState != null) {
+            manager.onRestoreInstanceState(recyclerViewState)
+        }
     }
 }

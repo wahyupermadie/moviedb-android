@@ -20,15 +20,15 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_detail.*
 import org.jetbrains.anko.toast
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class DetailActivity : AppCompatActivity() {
+class DetailMovieActivity : AppCompatActivity() {
     private var moviesItem : ResultsItem? = null
     private var isFavorite : Boolean = false
     lateinit var mBinding : ActivityDetailBinding
     private lateinit var trailerAdapter: TrailerAdapter
     private var menuItem : Menu? = null
-    private val detailViewModel : DetailActivityViewModel by viewModel()
+    private val detailMovieViewModel : DetailMovieActivityViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this,R.layout.activity_detail)
@@ -42,7 +42,7 @@ class DetailActivity : AppCompatActivity() {
 
     @SuppressLint("CheckResult")
     private fun checkFavorite() {
-        detailViewModel.getSingleData(moviesItem?.id!!)
+        detailMovieViewModel.getSingleData(moviesItem?.id!!)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribeWith(object : SingleObserver<ResultsItem> {
@@ -87,7 +87,7 @@ class DetailActivity : AppCompatActivity() {
 
     @SuppressLint("CheckResult")
     private fun updateFavorite(id : Int, value : Boolean){
-        detailViewModel.updateFavorite(id, value)
+        detailMovieViewModel.updateFavorite(id, value)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({
@@ -119,11 +119,11 @@ class DetailActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
     private fun getData() {
         if (Constant.isConnected(this)){
-            detailViewModel.getTrailers(moviesItem?.id.toString()).observe(this, Observer{
+            detailMovieViewModel.getTrailers(moviesItem?.id.toString()).observe(this, Observer{
                 trailerAdapter = TrailerAdapter(it.results)
-                with(mBinding.rvVideos){
+                with(mBinding.rvTrailers){
                     this.adapter = trailerAdapter
-                    this.layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
+                    this.layoutManager = LinearLayoutManager(this@DetailMovieActivity, LinearLayoutManager.HORIZONTAL, false)
                 }
             })
         }
