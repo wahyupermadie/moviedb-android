@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,8 @@ import com.example.moviedb.ui.detail.DetailMovieActivity
 import com.example.moviedb.utils.Constant
 import kotlinx.android.synthetic.main.fragment_popular.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.ArrayList
+
 
 class PopularFragment : Fragment(){
     private val popularViewModel : PopularViewModel by viewModel()
@@ -29,7 +32,7 @@ class PopularFragment : Fragment(){
     private var isFetchingMovies: Boolean = true
     private lateinit var manager : LinearLayoutManager
     private var recyclerViewState : Parcelable? = null
-    val LIST_STATE_KEY = "RECYCLER_VIEW_STATE"
+
     companion object{
         fun instance() : PopularFragment{
             val args = Bundle()
@@ -37,6 +40,8 @@ class PopularFragment : Fragment(){
             fragment.arguments = args
             return fragment
         }
+        const val LIST_DATA_KEY = "LIST_DATA"
+        const val LIST_STATE_KEY = "RECYCLER_VIEW_STATE"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,11 +54,15 @@ class PopularFragment : Fragment(){
         init()
         scrollListener()
         if (savedInstanceState!=null){
-            // getting recyclerview position
             recyclerViewState = savedInstanceState.getParcelable(LIST_STATE_KEY)
             rv_movies.layoutManager?.onRestoreInstanceState(recyclerViewState)
+            val saved = savedInstanceState.getParcelableArrayList<ResultsItem>(LIST_DATA_KEY)
+            popularList = saved
+            setAdapter()
         }
-        fetchData(currentPage)
+        else{
+            fetchData(currentPage)
+        }
     }
 
     private fun fetchData(page : Int) {
@@ -98,6 +107,11 @@ class PopularFragment : Fragment(){
         dialog = ProgressDialog(context)
         dialog.setMessage("Fetching data...")
         dialog.setCancelable(false)
+        if(recyclerViewState != null){
+            dialog.dismiss()
+        }else{
+            dialog.show()
+        }
         manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         popularAdapter = PopularAdapter(mutableListOf()) {
             val intent = Intent(context, DetailMovieActivity::class.java)
@@ -126,6 +140,7 @@ class PopularFragment : Fragment(){
     override fun onSaveInstanceState(outState: Bundle) {
         recyclerViewState = rv_movies.layoutManager?.onSaveInstanceState()
         outState.putParcelable(LIST_STATE_KEY, recyclerViewState)
+        outState.putParcelableArrayList(LIST_DATA_KEY, popularList as ArrayList<out Parcelable> )
         super.onSaveInstanceState(outState)
     }
 

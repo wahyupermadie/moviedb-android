@@ -107,7 +107,11 @@ class TvShowFragment : Fragment(){
         dialog = ProgressDialog(context)
         dialog.setMessage("Fetching data...")
         dialog.setCancelable(false)
-        dialog.show()
+        if(recyclerViewState != null){
+            dialog.dismiss()
+        }else{
+            dialog.show()
+        }
         manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         tvSHowAdapter = TvShowAdapter(mutableListOf()) {
             val intent = Intent(context, DetailTvShowActivity::class.java)

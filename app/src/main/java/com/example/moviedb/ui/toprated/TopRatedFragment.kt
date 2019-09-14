@@ -107,6 +107,11 @@ class TopRatedFragment() : Fragment(){
         dialog = ProgressDialog(context)
         dialog.setMessage("Fetching data...")
         dialog.setCancelable(false)
+        if(recyclerViewState != null){
+            dialog.dismiss()
+        }else{
+            dialog.show()
+        }
         manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         topratedAdapter = TopRatedAdapter(mutableListOf()) {
             val intent = Intent(context, DetailMovieActivity::class.java)
