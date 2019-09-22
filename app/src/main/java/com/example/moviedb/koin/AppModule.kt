@@ -13,10 +13,11 @@ import org.koin.dsl.module
 val appModule = module {
     single { Room.databaseBuilder(get(), MoviesDatabase::class.java, "movies_database").fallbackToDestructiveMigration().build() }
     single { get<MoviesDatabase>().movieDao() }
+    single { get<MoviesDatabase>().tvShowDao() }
     viewModel { PopularViewModel(get(), get() )}
     viewModel { TopRatedViewModel(get(), get()) }
     viewModel { DetailMovieActivityViewModel(get(), get()) }
-    viewModel { TvShowViewModel(get()) }
-    viewModel { DetailTvShowVM(get()) }
+    viewModel { TvShowViewModel(get(), get()) }
+    viewModel { DetailTvShowVM(get(), get()) }
 
 }

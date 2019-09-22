@@ -72,7 +72,7 @@ class DetailMovieActivity : AppCompatActivity() {
 
     private fun init() {
         setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = moviesItem?.title
         mBinding.movies = moviesItem
 

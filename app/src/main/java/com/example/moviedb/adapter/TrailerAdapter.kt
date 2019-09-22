@@ -32,7 +32,7 @@ class TrailerAdapter(private var trailes : List<ResultsItem>?) : RecyclerView.Ad
             Glide.with(itemView.context)
                 .asBitmap()
                 .thumbnail(0.1f)
-                .load("http://img.youtube.com/vi/" + resultsItem?.key + "/default.jpg")
+                .load("https://img.youtube.com/vi/" + resultsItem?.key + "/default.jpg")
                 .into(itemView.iv_trailes)
 
         }

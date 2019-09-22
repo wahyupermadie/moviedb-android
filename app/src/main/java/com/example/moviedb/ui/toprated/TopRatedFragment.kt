@@ -17,10 +17,13 @@ import com.example.moviedb.adapter.TopRatedAdapter
 import com.example.moviedb.service.model.popular.ResultsItem
 import com.example.moviedb.ui.detail.DetailMovieActivity
 import com.example.moviedb.utils.Constant
+import com.example.moviedb.utils.Constant.LIST_DATA_KEY
+import com.example.moviedb.utils.Constant.LIST_STATE_KEY
 import kotlinx.android.synthetic.main.toprated_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
-class TopRatedFragment() : Fragment(){
+class TopRatedFragment : Fragment(){
     private val topRatedVM : TopRatedViewModel by viewModel()
     private lateinit var topratedAdapter : TopRatedAdapter
     private var topratedList : List<ResultsItem>? = null
@@ -29,7 +32,6 @@ class TopRatedFragment() : Fragment(){
     private var isFetchingMovies: Boolean = true
     private lateinit var manager : LinearLayoutManager
     private var recyclerViewState : Parcelable? = null
-    val LIST_STATE_KEY = "RECYCLER_VIEW_STATE"
     companion object{
         fun instance() : TopRatedFragment{
             val args = Bundle()
@@ -44,11 +46,14 @@ class TopRatedFragment() : Fragment(){
         if (recyclerViewState != null) {
             manager.onRestoreInstanceState(recyclerViewState)
         }
+        dialog.dismiss()
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         recyclerViewState = rv_movies.layoutManager?.onSaveInstanceState()
         outState.putParcelable(LIST_STATE_KEY, recyclerViewState)
+        outState.putParcelableArrayList(LIST_DATA_KEY, topratedList as ArrayList<out Parcelable>)
         super.onSaveInstanceState(outState)
     }
 
@@ -65,8 +70,13 @@ class TopRatedFragment() : Fragment(){
             // getting recyclerview position
             recyclerViewState = savedInstanceState.getParcelable(LIST_STATE_KEY)
             rv_movies.layoutManager?.onRestoreInstanceState(recyclerViewState)
+            topratedList = savedInstanceState.getParcelableArrayList(LIST_DATA_KEY)
+            setAdapter()
         }
-        fetchData(currentPage)
+        else{
+            dialog.show()
+            fetchData(currentPage)
+        }
     }
 
     private fun fetchData(page : Int) {
@@ -107,11 +117,6 @@ class TopRatedFragment() : Fragment(){
         dialog = ProgressDialog(context)
         dialog.setMessage("Fetching data...")
         dialog.setCancelable(false)
-        if(recyclerViewState != null){
-            dialog.dismiss()
-        }else{
-            dialog.show()
-        }
         manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         topratedAdapter = TopRatedAdapter(mutableListOf()) {
             val intent = Intent(context, DetailMovieActivity::class.java)

@@ -1,9 +1,13 @@
 package com.example.moviedb.service.model.popular.tvShow
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+@Entity(tableName = "results_show")
 @Parcelize
 data class ResultsItem(
 
@@ -16,12 +20,14 @@ data class ResultsItem(
 	@field:SerializedName("original_language")
 	var originalLanguage: String? = null,
 
+	@Ignore
 	@field:SerializedName("genre_ids")
 	var genreIds: List<Int>? = null,
 
 	@field:SerializedName("poster_path")
 	var posterPath: String? = null,
 
+	@Ignore
 	@field:SerializedName("origin_country")
 	var originCountry: List<String?>? = null,
 
@@ -40,9 +46,12 @@ data class ResultsItem(
 	@field:SerializedName("name")
 	var name: String? = null,
 
+	@PrimaryKey
 	@field:SerializedName("id")
 	var id: Int? = null,
 
 	@field:SerializedName("vote_count")
-	var voteCount: Int? = null
+	var voteCount: Int? = null,
+
+	var isFavorite: Boolean? = false
 ) : Parcelable

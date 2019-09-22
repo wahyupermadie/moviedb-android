@@ -17,4 +17,8 @@
     <string name="lbl_trailers">Trailers</string>
     <string name="lbl_overview">Overview</string>
     <string name="lbl_title">Title</string>
+    <string name="movies_fav">Movies Fav</string>
+    <string name="tv_show_fav">Tv Show Fav</string>
+    <string name="fav_movies_title">Movies Favotite</string>
+    <string name="fav_tv_show_title">Tv Show Favotite</string>
 </resources>

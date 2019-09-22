@@ -17,9 +17,11 @@ import com.example.moviedb.adapter.TvShowAdapter
 import com.example.moviedb.service.model.popular.tvShow.ResultsItem
 import com.example.moviedb.ui.detailTvShow.DetailTvShowActivity
 import com.example.moviedb.utils.Constant
+import com.example.moviedb.utils.Constant.LIST_DATA_KEY
+import com.example.moviedb.utils.Constant.LIST_STATE_KEY
 import kotlinx.android.synthetic.main.fragment_tv_show.*
-import kotlinx.android.synthetic.main.fragment_tv_show.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
 class TvShowFragment : Fragment(){
     private val tvShowVM : TvShowViewModel by viewModel()
@@ -30,7 +32,6 @@ class TvShowFragment : Fragment(){
     private var isFetchingTvShow: Boolean = true
     private var tvShowList : List<ResultsItem>? = null
     private var recyclerViewState : Parcelable? = null
-    val LIST_STATE_KEY = "RECYCLER_VIEW_STATE"
     companion object{
         fun instance() : TvShowFragment{
             val args = Bundle()
@@ -50,17 +51,12 @@ class TvShowFragment : Fragment(){
     override fun onSaveInstanceState(outState: Bundle) {
         recyclerViewState = rv_tv_show.layoutManager?.onSaveInstanceState()
         outState.putParcelable(LIST_STATE_KEY, recyclerViewState)
+        outState.putParcelableArrayList(LIST_DATA_KEY, tvShowList as ArrayList<out Parcelable>)
         super.onSaveInstanceState(outState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_tv_show, container, false)
-        if (savedInstanceState!=null){
-            // getting recyclerview position
-            recyclerViewState = savedInstanceState.getParcelable(LIST_STATE_KEY)
-            view.rv_tv_show.layoutManager?.onRestoreInstanceState(recyclerViewState)
-        }
-        return view
+        return inflater.inflate(R.layout.fragment_tv_show, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -72,15 +68,27 @@ class TvShowFragment : Fragment(){
             // getting recyclerview position
             recyclerViewState = savedInstanceState.getParcelable(LIST_STATE_KEY)
             rv_tv_show.layoutManager?.onRestoreInstanceState(recyclerViewState)
+            tvShowList = savedInstanceState.getParcelableArrayList(LIST_DATA_KEY)
+            setAdapter()
+
+        }else{
+            dialog.show()
+            fetchData(currentPage)
         }
-        fetchData(currentPage)
     }
 
     private fun fetchData(currentPage: Int) {
         isFetchingTvShow = true
         if (Constant.isConnected(context)) {
-            tvShowVM.getTvShowPopular(currentPage)?.observe(this, Observer {
+            tvShowVM.getTvShowPopular(currentPage)?.observe(viewLifecycleOwner, Observer {
                 tvShowList = it?.results
+                dialog.dismiss()
+                setAdapter()
+            })
+        }
+        else{
+            tvShowVM.getLocalData()?.observe(viewLifecycleOwner, Observer {
+                tvShowList = it
                 dialog.dismiss()
                 setAdapter()
             })
@@ -107,11 +115,6 @@ class TvShowFragment : Fragment(){
         dialog = ProgressDialog(context)
         dialog.setMessage("Fetching data...")
         dialog.setCancelable(false)
-        if(recyclerViewState != null){
-            dialog.dismiss()
-        }else{
-            dialog.show()
-        }
         manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         tvSHowAdapter = TvShowAdapter(mutableListOf()) {
             val intent = Intent(context, DetailTvShowActivity::class.java)
