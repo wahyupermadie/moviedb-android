@@ -5,9 +5,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +14,7 @@ import com.example.moviedb.R
 import com.example.moviedb.adapter.TvShowAdapter
 import com.example.moviedb.service.model.popular.tvShow.ResultsItem
 import com.example.moviedb.ui.detailTvShow.DetailTvShowActivity
+import com.example.moviedb.ui.searchActivity.SearchActivity
 import com.example.moviedb.utils.Constant
 import com.example.moviedb.utils.Constant.LIST_DATA_KEY
 import com.example.moviedb.utils.Constant.LIST_STATE_KEY
@@ -63,6 +62,7 @@ class TvShowFragment : Fragment(){
         super.onActivityCreated(savedInstanceState)
 
         init()
+        setHasOptionsMenu(true)
         scrollListener()
         if (savedInstanceState!=null){
             // getting recyclerview position
@@ -108,6 +108,22 @@ class TvShowFragment : Fragment(){
                 this.adapter = tvSHowAdapter
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_icon, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.icon_search -> {
+                val intent = Intent(context, SearchActivity::class.java)
+                intent.putExtra("value", "tv")
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     @SuppressLint("WrongConstant")

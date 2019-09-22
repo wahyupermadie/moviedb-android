@@ -15,7 +15,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class TvShowRepository(val apiService: ApiService, val tvShowDao: TvShowDao){
+class TvShowRepository(private val apiService: ApiService, private val tvShowDao: TvShowDao){
 
     @SuppressLint("CheckResult")
     fun getPopularTvShow(page : Int) : LiveData<ResponseTvShow> {
