@@ -42,5 +42,8 @@ interface ApiService {
                     @Query("api_key") key: String,
                     @Query("query") query: String) : Maybe<ResponseTvShow>
 
-
+    @GET("discover/movie")
+    fun getNewMovies(@Query("api_key") key: String,
+                     @Query("primary_release_date.gte") gte: String,
+                     @Query("primary_release_date.lte") lte: String) : Maybe<ResponseMovies>
 }

@@ -13,9 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.searchActivity.SearchActivity"></activity>
-        <activity android:name=".ui.detailTvShow.DetailTvShowActivity"></activity>
-        <activity android:name=".ui.detail.DetailMovieActivity"></activity>
+
+        <activity android:name=".ui.setting.SettingActivity" />
+        <activity android:name=".ui.searchActivity.SearchActivity" />
+        <activity android:name=".ui.detailTvShow.DetailTvShowActivity" />
+        <activity android:name=".ui.detail.DetailMovieActivity" />
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +25,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".ui.widget.FavoriteWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/favorite_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".ui.widget.StackWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <provider
+            android:name=".utils.FavoriteProvider"
+            android:authorities="com.example.moviedb"
+            android:exported="true"
+            android:readPermission="com.example.moviedb.READ_DATABASE"
+            android:writePermission="com.example.moviedb.WRITE_DATABASE" />
     </application>
 
 </manifest>

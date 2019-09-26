@@ -1,29 +1,29 @@
-package com.example.moviedb.utils
+package com.example.moviedb.service.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.example.moviedb.utils.NotificationHandler
 import java.util.*
 
 class AlertOpenAppsWorker(ctx: Context, param: WorkerParameters) : Worker(ctx, param){
+    private val calendar = Calendar.getInstance()
     override fun doWork(): Result {
         val appContext = applicationContext
         return try {
-            Log.d("DATA_GUE","START")
             if (checkTime()){
-                NotificationHandler.sendNotification("Hello Bosku", appContext)
+                NotificationHandler.sendNotification(
+                    message = "Yuk buka aplikasi Movies App Sekarang",
+                    context = appContext, isGroup = false, movieList = arrayListOf()
+                )
             }
             Result.success()
         }catch (e : Exception){
-            Log.d("DATA_GUE","FAIL "+e.localizedMessage)
             Result.failure()
         }
     }
 
     private fun checkTime(): Boolean{
-        val locale = Locale("id", "ID")
-        val calendar = Calendar.getInstance()
-        return calendar.get(Calendar.HOUR_OF_DAY).toString() == "24"
+        return calendar.get(Calendar.HOUR_OF_DAY).toString() == "23"
     }
 }

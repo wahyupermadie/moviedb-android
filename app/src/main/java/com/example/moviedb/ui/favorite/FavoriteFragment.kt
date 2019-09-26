@@ -47,6 +47,7 @@ class FavoriteFragment : Fragment(), ViewPager.OnPageChangeListener,
         nsvp_favorite.adapter = ViewPagerAdapter()
         nsvp_favorite.offscreenPageLimit = fragments.size
 
+        setupTitile(getString(R.string.fav_movies_title))
         btn_nav.setOnNavigationItemSelectedListener(this)
     }
 
@@ -58,7 +59,7 @@ class FavoriteFragment : Fragment(), ViewPager.OnPageChangeListener,
 
     override fun onPageSelected(position: Int) {
         when(position){
-            1 -> setupTitile(getString(R.string.fav_movies_title))
+            0 -> setupTitile(getString(R.string.fav_movies_title))
             else -> setupTitile(getString(R.string.fav_tv_show_title))
         }
     }

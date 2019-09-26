@@ -1,5 +1,6 @@
 package com.example.moviedb.service.local
 
+import android.database.Cursor
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
@@ -28,5 +29,8 @@ interface MoviesDao{
 
     @Query("SELECT * FROM result_item WHERE isFavorite = :favorite")
     fun getFavorite(favorite: Boolean) : LiveData<List<ResultsItem>>
+
+    @Query("SELECT * FROM result_item WHERE isFavorite = :favorite")
+    fun getFavoriteCursor(favorite: Boolean) : Cursor
 
 }

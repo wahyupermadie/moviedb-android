@@ -21,6 +21,12 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_detail.*
 import org.jetbrains.anko.toast
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
+import android.content.Intent
+import com.example.moviedb.ui.widget.FavoriteWidget
+
 
 class DetailMovieActivity : AppCompatActivity() {
     private var moviesItem : ResultsItem? = null
@@ -85,13 +91,22 @@ class DetailMovieActivity : AppCompatActivity() {
         return true
     }
 
+    private fun updateWidget(){
+        val intent = Intent(this, FavoriteWidget::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        val ids = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(
+            application, FavoriteWidget::class.java))
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        sendBroadcast(intent)
+
+    }
     @SuppressLint("CheckResult")
     private fun updateFavorite(id : Int, value : Boolean){
         detailMovieViewModel.updateFavorite(id, value)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({
-
+                updateWidget()
             },{
                 toast("Error "+it.localizedMessage)
             })

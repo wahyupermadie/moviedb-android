@@ -10,10 +10,12 @@ import androidx.fragment.app.Fragment
 import com.example.moviedb.R
 import com.example.moviedb.ui.favorite.FavoriteFragment
 import com.example.moviedb.ui.popular.PopularFragment
+import com.example.moviedb.ui.setting.SettingActivity
 import com.example.moviedb.ui.toprated.TopRatedFragment
 import com.example.moviedb.ui.tvshow.TvShowFragment
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.startActivity
 import java.util.*
 
 
@@ -29,7 +31,7 @@ class MainActivity : AppCompatActivity(){
 
     private fun initUi() {
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = "Popular Movies"
+        supportActionBar?.title = "Popular Movies"
         view_pager.setCurrentItem(0, true)
     }
 
@@ -38,6 +40,9 @@ class MainActivity : AppCompatActivity(){
             R.id.change_language -> {
                 val mIntent = Intent(ACTION_LOCALE_SETTINGS)
                 startActivity(mIntent)
+            }
+            R.id.setting -> {
+                startActivity<SettingActivity>()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -67,10 +72,22 @@ class MainActivity : AppCompatActivity(){
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position){
-                    0 -> view_pager.setCurrentItem(0, true)
-                    1 -> view_pager.setCurrentItem(1, true)
-                    2 -> view_pager.setCurrentItem(2, true)
-                    3 -> view_pager.setCurrentItem(3, true)
+                    0 -> {
+                        supportActionBar?.title = "Popular Movies"
+                        view_pager.setCurrentItem(0, true)
+                    }
+                    1 -> {
+                        supportActionBar?.title = "Top Rated Movies"
+                        view_pager.setCurrentItem(1, true)
+                    }
+                    2 -> {
+                        supportActionBar?.title = "Tv Show"
+                        view_pager.setCurrentItem(2, true)
+                    }
+                    3 -> {
+                        supportActionBar?.title = "Favorite"
+                        view_pager.setCurrentItem(3, true)
+                    }
                 }
             }
 

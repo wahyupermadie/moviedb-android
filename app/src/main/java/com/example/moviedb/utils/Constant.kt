@@ -8,13 +8,17 @@ import java.util.*
 object Constant{
     const val NOTIFICATION_TITLE = "Hello Notification Here"
     const val IMAGE_URL = "https://image.tmdb.org/t/p/w342"
+    const val BACKDROP_URL = "https://image.tmdb.org/t/p/w500"
     const val LIST_DATA_KEY = "LIST_DATA"
     const val LIST_STATE_KEY = "RECYCLER_VIEW_STATE"
     const val LANGUAGE = "en-US"
     const val CHANNEL_ID = "DICODING_WAHYU"
+    const val SETTING_REMINDER_OPEN = "BUKALAGI"
+    const val SETTING_REMINDER_NEW = "FILMBARU"
+
     fun dateFormat(value : String) : String{
 
-        val sdf = SimpleDateFormat("yyyy-mm-dd", Locale.US);
+        val sdf = SimpleDateFormat("yyyy-mm-dd", Locale.US)
         val date = sdf.parse(value)
 
         val newSdf = SimpleDateFormat("dd-MMM-yyyy", Locale.US)

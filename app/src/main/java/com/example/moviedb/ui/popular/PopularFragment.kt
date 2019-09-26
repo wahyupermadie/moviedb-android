@@ -18,6 +18,7 @@ import com.example.moviedb.ui.searchActivity.SearchActivity
 import com.example.moviedb.utils.Constant
 import com.example.moviedb.utils.Constant.LIST_DATA_KEY
 import com.example.moviedb.utils.Constant.LIST_STATE_KEY
+import com.example.moviedb.utils.NotificationHandler.sendNotification
 import kotlinx.android.synthetic.main.fragment_popular.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
