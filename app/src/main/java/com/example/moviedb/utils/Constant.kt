@@ -15,6 +15,10 @@ object Constant{
     const val CHANNEL_ID = "DICODING_WAHYU"
     const val SETTING_REMINDER_OPEN = "BUKALAGI"
     const val SETTING_REMINDER_NEW = "FILMBARU"
+    const val MOVIES_NEW = "NEW_MOVIES"
+    const val REMINDER = "REMINDER"
+    const val TIME_FORMAT = "HH:mm"
+    const val DATE_FORMAT = "yyyy-MM-dd"
 
     fun dateFormat(value : String) : String{
 

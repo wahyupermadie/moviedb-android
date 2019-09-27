@@ -29,15 +29,12 @@ import android.os.Binder
 class StackRemoteViewsFactory(private val context: Context) : RemoteViewsService.RemoteViewsFactory{
     private var mWidgetItems : ArrayList<ResultsItem> = arrayListOf()
     private var mCursor: Cursor? = null
-    /** The authority of this content provider.  */
     val AUTHORITY = "com.example.moviedb"
 
-    /** The URI for the Movies table.  */
     val URI_MOVIES = Uri.parse(
         "content://$AUTHORITY/result_item"
     )
 
-    /** The URI for the tvShow table.  */
     val URI_TV = Uri.parse(
         "content://$AUTHORITY/results_show"
     )

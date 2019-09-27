@@ -7,16 +7,16 @@ import android.view.MenuItem
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.example.moviedb.R
-import com.example.moviedb.service.worker.AlertOpenAppsWorker
-import com.example.moviedb.service.worker.NewMoviesWorker
 import com.example.moviedb.utils.Constant
 import kotlinx.android.synthetic.main.activity_setting.*
 import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
+import com.example.moviedb.utils.AlarmReceiver
 
 class SettingActivity : AppCompatActivity() {
     private val sf : SharedPreferences by inject()
     private val workManager = WorkManager.getInstance(application)
+    private val alarmReceiver= AlarmReceiver()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
@@ -46,46 +46,24 @@ class SettingActivity : AppCompatActivity() {
     }
 
     private fun initEvent() {
-        swich_release.setOnCheckedChangeListener { compoundButton, isChecked ->
+        swich_release.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked){
                 sf.edit().putBoolean(Constant.SETTING_REMINDER_NEW, true).apply()
-                runWorkerNewMovies()
+                alarmReceiver.setRepeatingAlarm(this, Constant.MOVIES_NEW,"20:12")
             }else{
                 sf.edit().putBoolean(Constant.SETTING_REMINDER_NEW, false).apply()
-                stopWorker(Constant.SETTING_REMINDER_NEW)
+                alarmReceiver.cancelAlarm(this, Constant.MOVIES_NEW)
             }
         }
 
         swich_daily.setOnCheckedChangeListener { compoundButton, isChecked ->
             if (isChecked){
                 sf.edit().putBoolean(Constant.SETTING_REMINDER_OPEN, true).apply()
-                runWorkerDailyReminder()
+                alarmReceiver.setRepeatingAlarm(this, Constant.REMINDER,"20:13")
             }else{
                 sf.edit().putBoolean(Constant.SETTING_REMINDER_OPEN, false).apply()
-                stopWorker(Constant.SETTING_REMINDER_OPEN)
+                alarmReceiver.cancelAlarm(this, Constant.REMINDER)
             }
         }
-    }
-
-    private fun stopWorker(tag: String) {
-        workManager.cancelAllWorkByTag(tag)
-    }
-
-    private fun runWorkerDailyReminder() {
-        val dayWorkBuilder = PeriodicWorkRequest.Builder(
-            AlertOpenAppsWorker::class.java, 15, TimeUnit.MINUTES, 5,
-            TimeUnit.MINUTES
-        ).addTag(Constant.SETTING_REMINDER_OPEN)
-        val dayWork = dayWorkBuilder.build()
-        workManager.enqueue(dayWork)
-    }
-
-    private fun runWorkerNewMovies() {
-        val dayWorkBuilder = PeriodicWorkRequest.Builder(
-            NewMoviesWorker::class.java, 15, TimeUnit.MINUTES, 5,
-            TimeUnit.MINUTES
-        ).addTag(Constant.SETTING_REMINDER_NEW)
-        val dayWork = dayWorkBuilder.build()
-        workManager.enqueue(dayWork)
     }
 }

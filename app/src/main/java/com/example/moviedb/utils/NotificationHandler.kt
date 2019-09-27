@@ -26,22 +26,18 @@ object NotificationHandler {
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the NotificationChannel, but only on API 26+ because
-            // the Noti"ficationChannel class is new and not in the support library
             val name = "DICODING MOVIES APPS"
             val description = "Movies apps that show the schedules of movies and tv show"
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID,  name, importance)
             channel.description = description
 
-            // Add the channel
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Create the notification
        if (!isGroup){
            mBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
                .setSmallIcon(R.drawable.ic_add_favorite)
@@ -73,6 +69,10 @@ object NotificationHandler {
        }
 
         // Show the notification
-        NotificationManagerCompat.from(context).notify(1, mBuilder.build())
+        NotificationManagerCompat.from(context).notify(randomInt(), mBuilder.build())
+    }
+
+    private fun randomInt() : Int {
+        return Math.random().toInt()
     }
 }
