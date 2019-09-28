@@ -2,7 +2,7 @@
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
-        <variable name="items" type="com.example.moviedb.service.model.popular.tvShow.ResultsItem"/>
+        <variable name="items" type="com.wepe.moviedb.service.model.popular.tvShow.ResultsItem"/>
     </data>
     <com.google.android.material.card.MaterialCardView
             app:cardCornerRadius="20dp"

@@ -19,7 +19,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/navigation"/>
 
-    <com.example.moviedb.view.NonSwipeableViewPager
+    <com.wepe.moviedb.view.NonSwipeableViewPager
         android:id="@+id/nsvp_favorite"
         android:layout_width="match_parent"
         android:layout_weight="1"

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.moviedb">
+    package="com.wepe.moviedb">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.VIBRATE" />+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <permission android:name="com.wepe.moviedb.READ_DATABASE" />
+    <permission android:name="com.wepe.moviedb.WRITE_DATABASE" />
+
     <application
         android:name=".MainApp"
         android:allowBackup="true"
@@ -43,10 +47,10 @@
 
         <provider
             android:name=".utils.FavoriteProvider"
-            android:authorities="com.example.moviedb"
+            android:authorities="com.wepe.moviedb"
             android:exported="true"
-            android:readPermission="com.example.moviedb.READ_DATABASE"
-            android:writePermission="com.example.moviedb.WRITE_DATABASE" />
+            android:readPermission="com.wepe.moviedb.READ_DATABASE"
+            android:writePermission="com.wepe.moviedb.WRITE_DATABASE" />
 
         <receiver
             android:name=".utils.AlarmReceiver"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
     <data>
-        <variable name="toprated" type="com.example.moviedb.service.model.popular.ResultsItem"/>
+        <variable name="toprated" type="com.wepe.moviedb.service.model.popular.ResultsItem"/>
     </data>
     <LinearLayout
             android:id="@+id/ll_movies"
